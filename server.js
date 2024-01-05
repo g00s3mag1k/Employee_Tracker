@@ -50,8 +50,10 @@ function strTracker() {
                 viewAllEmployees();
                 break;
             case 'Add a department':
+                addDepartment();
                 break;
             case 'Add a role':
+                addRole();
                 break;
             case 'Add an employee':
                 break;
@@ -122,8 +124,39 @@ function addRole() {
             departments.push({
                 name: department.name,
                 value: department.id
-            })
-        })
-    })
-    
+            });
+        });
+        inquirer
+         .prompt ([
+            {
+                name: 'title',
+                type: 'input',
+                message: 'Enter the name of the role:'
+            },
+            {
+                name: 'salary',
+                type: 'input',
+                message: 'Enter the salary for the role:'
+            },
+            {
+                name: 'department',
+                type: 'list',
+                message: 'Select the department for the role:',
+                choices: departments
+            }
+         ])
+         .then ((answers) => {
+            connection.query('INSERT INTO role SET ?', {
+                title: answers.title,
+                salary: answers.salary,
+                department_id: answers.department
+            }, (err, res) => {
+                if (err) throw err;
+                console.log(`Role ${answers.title} added successfully!`);
+                strTracker();
+            });
+         });
+    });
 }
+
+//Function to add an employee
