@@ -1,28 +1,34 @@
-const inquirer = require('inquirer');
-const mysql = require('mysql2');
+const { prompt } = require("inquirer");
+const mysql = require("mysql2");
 //Import and require mysql2
+const util = require("util");
+//const util = require("util");
+//const consTable = require("console.table");
+const PORT = process.env.PORT || 3006
+
+function init() {
+    const '' = logo({ name: "Employee Manager"}).render();
+    console.log('');
+    strTracker();
+};
+
 
 //Connect to database
 const db = mysql.createConnection(
     {
-        host: 'localhost',
+        host: '127.0.0.1',
         port: 3306,
         user: 'root',
-        password: '',
+        password: 'bootcamp',
         database: 'employee_db'
-    },
-    console.log(`Connected to the database.`)
-);
+    });
+    db.query = util.promisify(db.query);
 
-connection.connect ((err) => {
-    if (err) throw err;
-    console.log('You have successfully connected!');
-});
 
+ 
 //Function to start the app
-function strTracker() {
-    inquirer
-     .prompt ({
+async function strTracker() {
+    const { action } = await inquirer.prompt ([{
         name: 'action',
         type: 'list',
         message: 'What would you like to do?',
@@ -35,11 +41,11 @@ function strTracker() {
             'Add an employee',
             'Update an employee role',
             'Exit'
-        ]
+        ],
 
-     })
-     .then ((answer) => {
-        switch (answer.action) {
+     }]);
+
+        switch (action) {
             case 'View all departments':
                 viewAllDepartments();
                 break;
@@ -60,65 +66,69 @@ function strTracker() {
             case 'Update an employee role':
                 break;
             case 'Exit':
+                db.end();
                 break;
-            
         }
-     });
+        strTracker();
 }
 
 //Function to view all departments
-function viewAllDepartments() {
-    connection.query('SELECT * FROM department', (err, res) => {
-        if (err) throw err;
-        console.table(res);
-        strTracker();
-    });
+async function viewAllDepartments() {
+    try {
+    const results = await db.query('SELECT * FROM department');
+        console.table(results);
+    } catch (err) {
+        console.error(err);
+    }
 }
 
 //Function to view all roles
-function viewAllRoles() {
-    connection.query('SELECT role.id, role.title, department.name AS department, role.salary FROM role INNER JOIN department ON role.department_id = department.id', (err, res) => {
-        if (err) throw err;
-        console.table(res);
-        strTracker();
-    });
+async function viewAllRoles() {
+    try {
+        const results = await db.query(`SELECT role.id, role.title, department.name AS department, role.salary 
+        FROM role INNER JOIN department ON department_id = role.department.id`);
+        console.table(results);
+    } catch (err) {
+        console.error(err);
+  }
 }
 
 //Function to view all employees
-function viewAllEmployees() {
-    const query = 'SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, " ", manager.last_name) AS manager ' +
+async function viewAllEmployees() {
+    try {
+    const results = await db.query (`SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, " ", manager.last_name) AS manager ' +
     'FROM employee ' +
     'INNER JOIN role ON employee.role_id = role.id ' +
     'INNER JOIN department ON role.department_id = department.id ' +
-    'LEFT JOIN employee manager ON manager.id = employee.manager_id';
-
- connection.query(query, (err, res) => {
-    if (err) throw err;
-    console.table(res);
-    strTracker();
- });
+    'LEFT JOIN employee manager ON manager.id = employee.manager_id`);
+    console.table(results);
+    } catch (err) {
+    console.error(err);
+ }
 }
 
 //Function to add a department
-function addDepartment() {
-    inquirer
-        .prompt({
-            name: 'name',
+async function addDepartment() {
+    const { name } = await inquirer.prompt([
+        {
+            name: "name",
             type: 'input',
             message: 'Enter the name of the department:'
-        })
-        .then((answer) => {
-            connection.query('INSERT INTO department SET ?', { name: answer.name }, (err, res) => {
-                if (err) throw err;
-                console.log(`Department ${answer.name} added successfully!`);
-                strTracker();
-            });
-        });
+        },
+    ]);
+    try {
+        await db.query (
+            ` INSERT INTO department (name)
+            VALUES (?)`,
+            name
+        );
+        console.log(`Added`)
+    }
 }
 
 function addRole() {
     const departments = [];
-    connection.query('SELECT * FROM department', (err, res) => {
+    db.query('SELECT * FROM department', (err, res) => {
         if (err) throw err;
         res.forEach((department) => {
             departments.push({
@@ -146,7 +156,7 @@ function addRole() {
             }
          ])
          .then ((answers) => {
-            connection.query('INSERT INTO role SET ?', {
+            db.query('INSERT INTO role SET ?', {
                 title: answers.title,
                 salary: answers.salary,
                 department_id: answers.department
