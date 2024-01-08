@@ -1,16 +1,7 @@
-const { prompt } = require("inquirer");
+const inquirer = require("inquirer");
 const mysql = require("mysql2");
 //Import and require mysql2
-const util = require("util");
-//const util = require("util");
-//const consTable = require("console.table");
-const PORT = process.env.PORT || 3006
-
-function init() {
-    const '' = logo({ name: "Employee Manager"}).render();
-    console.log('');
-    strTracker();
-};
+const consTable = require("console.table");
 
 
 //Connect to database
@@ -22,10 +13,9 @@ const db = mysql.createConnection(
         password: 'bootcamp',
         database: 'employee_db'
     });
-    db.query = util.promisify(db.query);
 
+    strTracker();
 
- 
 //Function to start the app
 async function strTracker() {
     const { action } = await inquirer.prompt ([{
@@ -35,48 +25,52 @@ async function strTracker() {
         choices: [
             'View all departments',
             'View all roles',
-            'View all employess',
+            'View all employees',
             'Add a department',
             'Add a role',
             'Add an employee',
             'Update an employee role',
             'Exit'
         ],
+    }]);
 
-     }]);
+    switch (action) {
+        case 'View all departments':
+            viewAllDepartments();
+            break;
+        case 'View all roles':
+            viewAllRoles();
+            break;
+        case 'View all employees':
+            viewAllEmployees();
+            break;
+        case 'Add a department':
+            addDepartment();
+            break;
+        case 'Add a role':
+            addRole();
+            break;
+        case 'Add an employee':
+            addEmployee(); // Fixed: added the missing function call
+            break;
+        case 'Update an employee role':
+            updateEmployeeRole(); // Fixed: added the missing function call
+            break;
+        case 'Exit':
+            db.end();
+            break;
+    }
 
-        switch (action) {
-            case 'View all departments':
-                viewAllDepartments();
-                break;
-            case 'View all roles':
-                viewAllRoles();
-                break;
-            case 'View all employees':
-                viewAllEmployees();
-                break;
-            case 'Add a department':
-                addDepartment();
-                break;
-            case 'Add a role':
-                addRole();
-                break;
-            case 'Add an employee':
-                break;
-            case 'Update an employee role':
-                break;
-            case 'Exit':
-                db.end();
-                break;
-        }
-        strTracker();
+    await strTracker(); // Fixed: added the missing await statement
 }
+
+strTracker();
 
 //Function to view all departments
 async function viewAllDepartments() {
     try {
-    const results = await db.query('SELECT * FROM department');
-        console.table(results);
+        const results = db.query('SELECT * FROM department');
+        console.table(results.rows);
     } catch (err) {
         console.error(err);
     }
@@ -85,8 +79,8 @@ async function viewAllDepartments() {
 //Function to view all roles
 async function viewAllRoles() {
     try {
-        const results = await db.query(`SELECT role.id, role.title, department.name AS department, role.salary 
-        FROM role INNER JOIN department ON department_id = role.department.id`);
+        const results = db.query(`SELECT role.id, role.title, department.name AS department, role.salary 
+        FROM role INNER JOIN department ON department.id = role.department_id`);
         console.table(results);
     } catch (err) {
         console.error(err);
@@ -96,15 +90,25 @@ async function viewAllRoles() {
 //Function to view all employees
 async function viewAllEmployees() {
     try {
-    const results = await db.query (`SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, " ", manager.last_name) AS manager ' +
-    'FROM employee ' +
-    'INNER JOIN role ON employee.role_id = role.id ' +
-    'INNER JOIN department ON role.department_id = department.id ' +
-    'LEFT JOIN employee manager ON manager.id = employee.manager_id`);
-    console.table(results);
+        const results = db.query(`
+            SELECT
+                employee.id,
+                employee.first_name,
+                employee.last_name,
+                role.title,
+                department.name AS department,
+                role.salary,
+                CONCAT(manager.first_name, " ", manager.last_name) AS manager
+            FROM
+                employee
+            INNER JOIN role ON employee.role_id = role.id
+            INNER JOIN department ON role.department_id = department.id
+            LEFT JOIN employee manager ON manager.id = employee.manager_id
+        `);
+        console.table(results);
     } catch (err) {
-    console.error(err);
- }
+        console.error(err);
+    }
 }
 
 //Function to add a department
@@ -117,56 +121,43 @@ async function addDepartment() {
         },
     ]);
     try {
-        await db.query (
+        db.query(
             ` INSERT INTO department (name)
             VALUES (?)`,
-            name
+            [name] // Fixed: Pass the parameter as an array
         );
-        console.log(`Added`)
+        console.log(`Added ${name} to the database`);
+    } catch (err) {
+        console.error(err);
     }
 }
 
-function addRole() {
-    const departments = [];
-    db.query('SELECT * FROM department', (err, res) => {
-        if (err) throw err;
-        res.forEach((department) => {
-            departments.push({
-                name: department.name,
-                value: department.id
-            });
-        });
-        inquirer
-         .prompt ([
-            {
-                name: 'title',
-                type: 'input',
-                message: 'Enter the name of the role:'
-            },
-            {
-                name: 'salary',
-                type: 'input',
-                message: 'Enter the salary for the role:'
-            },
-            {
-                name: 'department',
-                type: 'list',
-                message: 'Select the department for the role:',
-                choices: departments
-            }
-         ])
-         .then ((answers) => {
-            db.query('INSERT INTO role SET ?', {
-                title: answers.title,
-                salary: answers.salary,
-                department_id: answers.department
-            }, (err, res) => {
-                if (err) throw err;
-                console.log(`Role ${answers.title} added successfully!`);
-                strTracker();
-            });
-         });
-    });
+async function addRole() {
+    const departments = db.query('SELECT * FROM department');
+    const { title, salary, department_id } = await inquirer.prompt([
+        {
+            name: 'title',
+            type: 'input',
+            message: 'Enter the name of the role:'
+        },
+        {
+            name: 'salary',
+            type: 'input',
+            message: 'Enter the salary for the role:'
+        },
+        {
+            name: 'department_id',
+            type: 'list',
+            message: 'Select the department for the role:',
+            choices: departments.map(department => department.department_id)
+        }
+    ]);
+    try {
+        db.query('INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)', [title, salary, department_id]);
+        console.log(`Role ${title} added successfully!`);
+    } catch (err) {
+        console.error(err);
+    }
 }
 
 //Function to add an employee
