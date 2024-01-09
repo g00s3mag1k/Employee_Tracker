@@ -1,6 +1,6 @@
 const mysql = require("mysql2");
 const consTable = require("console.table");
-const inquirer = require("inquirer");
+var inquirer = require('inquirer');
 
 //Connect to database
 const db = mysql.createConnection(
@@ -13,8 +13,8 @@ const db = mysql.createConnection(
     });
 
 //Function to start the app
-async function strTracker() {
-    const { action } = await inquirer.prompt ([{
+async function init() {
+    const { answers } = await inquirer.prompt ([{
         name: 'action',
         type: 'list',
         message: 'What would you like to do?',
@@ -30,7 +30,7 @@ async function strTracker() {
         ],
     }]);
 
-    switch (action) {
+    switch (answers) {
         case 'View all departments':
             viewAllDepartments();
             break;
@@ -57,7 +57,7 @@ async function strTracker() {
             break;
     }
 
-    await strTracker(); // Fixed: added the missing await statement
+    await init(); // Fixed: added the missing await statement
 }
 
 //Function to view all departments
@@ -154,5 +154,5 @@ async function addRole() {
     }
 }
 
-strTracker();
+init();
 //Function to add an employee
