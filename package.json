@@ -7,12 +7,16 @@
     "start": "node server.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "goose",
   "license": "MIT",
-  "description": "",
+  "description": "employee_tracker",
   "dependencies": {
     "console.table": "^0.10.0",
-    "inquirer": "^9.2.12",
+    "inquirer": "^8.2.4",
     "mysql2": "^3.7.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "employee_db"
   }
 }
