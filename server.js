@@ -1,8 +1,6 @@
-const inquirer = require("inquirer");
 const mysql = require("mysql2");
-//Import and require mysql2
 const consTable = require("console.table");
-
+const inquirer = require("inquirer");
 
 //Connect to database
 const db = mysql.createConnection(
@@ -13,8 +11,6 @@ const db = mysql.createConnection(
         password: 'bootcamp',
         database: 'employee_db'
     });
-
-    strTracker();
 
 //Function to start the app
 async function strTracker() {
@@ -63,8 +59,6 @@ async function strTracker() {
 
     await strTracker(); // Fixed: added the missing await statement
 }
-
-strTracker();
 
 //Function to view all departments
 async function viewAllDepartments() {
@@ -160,4 +154,5 @@ async function addRole() {
     }
 }
 
+strTracker();
 //Function to add an employee

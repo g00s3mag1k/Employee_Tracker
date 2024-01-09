@@ -1,14 +1,12 @@
--- Inserting dummy records into 'department' table
-INSERT INTO department (id, name)
-VALUES 
+INSERT INTO department (name)
+VALUES     
     (1, 'Sales' ),
     (2, 'Engineering' ),
     (3, 'Finance' ),
     (4, 'Legal' );
 
--- Inserting dummy records into 'roles' table
-INSERT INTO roles (id, title, salary, department_id)
-VALUES
+INSERT INTO roles (title, salary, department_id)
+VALUES 
     (1, 'Sales Lead', 100000, 1 ),
     (2, 'Salesperson', 70000, 1 ),
     (3, 'Lead Engineer', 145000, 2 ),
@@ -18,9 +16,8 @@ VALUES
     (7, 'Legal Team Lead', 230000, 4 ),
     (8, 'Lawyer', 200000, 4 );
 
--- Inserting dummy records into 'employee' table
-INSERT INTO employee (id, first_name, last_name, role_id, manager_id)
-VALUES
+INSERT INTO employee (first_name, last_name, role_id, manager_id)
+VALUES 
     (1, 'Joe', 'Schmoe', 1, 1),
     (2, 'John', 'Doe', 2, 2),
     (3, 'Sarah', 'Hill', 3, 3),
