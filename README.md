@@ -4,11 +4,11 @@
 
 ## Description
 
-This is an Employee Tracker app to view a employee database in Inquirer.js that is deployed through the integrated terminal using Node.js. It's an assignment from a bootcamp course I am currently enrolled in.
+This is an Employee Tracker app to view a employee database in Node.js and MySQL that is deployed through the integrated terminal using Inquirer.js. It also uses MySQL to store a database that is interactive through the terminal. Repo is a work in progress.
 
 ## Installation
 
-Open integrated terminal under the server.js file in VS code, or a code editor of your choosing, and run 'npm i' before running the application. After that run the command 'npm run start'. Highlight 'schema.sql' open integrated terminal and run 'mysql -u root -p' and password for your MySQL to open up. Than you are going to 'source schema.sql;' and 'source seeds.sql;' then 'quit;'.
+Open integrated terminal under the server.js file in VS code, or a code editor of your choosing, and run 'npm i' before running the application. After that run the command 'npm run start'. Highlight 'schema.sql' open integrated terminal by right-clicking and run 'mysql -u root -p' and password in the command prompt for your MySQL to open up. Than you are going to 'source schema.sql;', 'source seeds.sql;', and 'source query.sql;' then 'quit;'.
 
 ## Usage
 
@@ -17,6 +17,7 @@ Open integrated terminal under the server.js file in VS code, or a code editor o
 - Json
 - MySQL
 - Inquirer
+- Console.table
 
 ## Credits
 
