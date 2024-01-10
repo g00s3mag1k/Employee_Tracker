@@ -19,6 +19,9 @@ Open integrated terminal under the server.js file in VS code, or a code editor o
 - Inquirer
 - Console.table
 
+![Screenshot 2024-01-09 233406](https://github.com/g00s3mag1k/Employee_Tracker/assets/141582553/7c417847-5563-4087-9429-6b87fc6304de)
+![Screenshot 2024-01-09 233439](https://github.com/g00s3mag1k/Employee_Tracker/assets/141582553/136de553-2ce2-4ffa-818e-20b24593a0c8)
+
 ## Credits
 
 UCSD curriculum from JavaScript, Node.js, MySQL, and Inquirer.js modules on GitLab
