@@ -31,7 +31,7 @@ NPM website:https://www.npmjs.com/package/inquirer
 
 W3schools: https://www.w3schools.com/sql/default.asp
 
-Youtube: 
+Youtube: https://www.youtube.com/results?search_query=sql+tutorial+for+beginners
 
 ## License
 
