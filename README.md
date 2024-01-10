@@ -1,6 +1,6 @@
 # Employee_Tracker
 
--
+![GitHub](https://img.shields.io/badge/license-MIT-purple?style=plastic)
 
 ## Description
 
